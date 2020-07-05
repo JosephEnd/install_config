@@ -1,0 +1,43 @@
+apiVersion: v1
+baseDomain: $dns_domainname
+
+compute:
+- hyperthreading: $compute_hyperthreading
+  name: $dns_computename
+  replicas: 0
+
+controlPlane:
+  hyperthreading: $control_hyperthreading
+  name: $control_name
+  replicas: $control_replicanr
+
+metadata:
+  name: $cluster_name
+
+networking:
+  clusterNetworks:
+  - cidr: $cluster_cidr
+    hostPrefix: 24
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - $cluster_service_cidr
+
+platform:
+  none: {}
+
+pullSecret: '{"auths": {"$dns_registryname.$cluster_name.$dns_domainname:$okd_repo_port":{"auth": "$base64auth" ,"email": "$email"}}}'
+
+sshKey: '$ssh_key'
+
+
+additionalTrustBundle:  |
+$additionalTrust
+
+
+imageContentSources:
+- mirrors:
+  - $dns_registryname.$cluster_name.$dns_domainname:$okd_repo_port/okd4/openshift4
+  source: quay.io/openshift/okd
+- mirrors:
+  - $dns_registryname.$cluster_name.$dns_domainname:$okd_repo_port/okd4/openshift4
+  source: quay.io/openshift/okd-content
